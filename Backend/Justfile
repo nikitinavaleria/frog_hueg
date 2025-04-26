@@ -1,0 +1,18 @@
+run:
+  docker compose up -d
+  python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+  source venv/bin/activate && python3 -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+
+psql:
+  POSTGRES_USER=$(grep -E '^POSTGRES_USER=' .env | cut -d '=' -f2- | sed -e 's/^"//' -e 's/"$//') && \
+  POSTGRES_DB=$(grep -E '^POSTGRES_DB=' .env | cut -d '=' -f2- | sed -e 's/^"//' -e 's/"$//') && \
+  echo "$POSTGRES_USER" && \
+  echo "$POSTGRES_DB" && \
+  docker compose exec -it frog-db psql -U $POSTGRES_USER -d $POSTGRES_DB
+
+migrate:
+  POSTGRES_USER=$(grep -E '^POSTGRES_USER=' .env | cut -d '=' -f2- | sed -e 's/^"//' -e 's/"$//') && \
+  POSTGRES_DB=$(grep -E '^POSTGRES_DB=' .env | cut -d '=' -f2- | sed -e 's/^"//' -e 's/"$//') && \
+  echo "$POSTGRES_USER" && \
+  echo "$POSTGRES_DB" && \
+  cat ./sql_code/InitDB.sql | docker compose exec -T frog-db psql -U $POSTGRES_USER -d $POSTGRES_DB
