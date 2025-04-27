@@ -14,7 +14,7 @@ router = APIRouter(prefix="/tv", tags=["tv"])
 def get_display_data(current_user=Depends(get_current_user)):
     logger.info(f"TV display request from user: {current_user}")
     
-    if current_user["role_id"] != 2:
+    if current_user["role_id"] not in [0, 2]:
         logger.warning(f"Unauthorized access attempt by user with role_id: {current_user['role_id']}")
         raise HTTPException(status_code=403, detail="Доступ запрещён")
 
@@ -59,7 +59,7 @@ def get_display_data(current_user=Depends(get_current_user)):
 
 @router.get("/orders", response_model=list[TVOrder])
 def get_tv_orders(current_user=Depends(get_current_user)):
-    if current_user["role_id"] != 2:
+    if current_user["role_id"] not in [0, 2]:
         logger.warning(f"Unauthorized access attempt by user with role_id: {current_user['role_id']}")
         raise HTTPException(status_code=403, detail="Доступ запрещён")
 
