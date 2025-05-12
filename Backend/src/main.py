@@ -36,6 +36,10 @@ origins = [
     "*"  # Allow all origins during development
 ]
 
+# origins = [
+#     "http://localhost:5173"
+# ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -64,5 +68,7 @@ app.mount("/api", api_app)
 
 if __name__ == "__main__":
     import uvicorn
+
+    # uvicorn.run("src.main:app", host="172.20.10.2", port=8000, reload=True)
     uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
 
