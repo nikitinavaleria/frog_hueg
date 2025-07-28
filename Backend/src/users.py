@@ -3,7 +3,9 @@ from src.db import get_db_connection
 from src.schemas import User, UserCreate
 from src.dependencies import require_role
 
-router = APIRouter(prefix="/api/users", tags=["users"])
+# Routers are mounted under `/api` in `main.py`; using `/api/users` here
+# resulted in paths like `/api/api/users`. Use a relative prefix instead.
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/", response_model=list[User], dependencies=[Depends(require_role([0]))])

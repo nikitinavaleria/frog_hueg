@@ -3,7 +3,10 @@ from src.db import get_db_connection
 from src.schemas import Role, RoleCreate
 from src.dependencies import require_role
 
-router = APIRouter(prefix="/api/roles", tags=["roles"])
+# Prefix is added when the router is mounted under `/api` in `main.py`.
+# Using `/api/roles` here produced paths like `/api/api/roles`.
+# Correct prefix should not include `/api`.
+router = APIRouter(prefix="/roles", tags=["roles"])
 
 @router.get("/", response_model=list[Role], dependencies=[Depends(require_role([0]))])
 def get_roles():

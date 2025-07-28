@@ -3,7 +3,8 @@ from src.db import get_db_connection
 from src.schemas import Toad, ToadCreate
 from src.dependencies import require_role
 
-router = APIRouter(prefix="/api/toads", tags=["toads"])
+# This router is mounted under `/api`, so the prefix should not repeat it.
+router = APIRouter(prefix="/toads", tags=["toads"])
 
 @router.get("/", response_model=list[Toad], dependencies=[Depends(require_role([0]))])
 def get_all_toads():

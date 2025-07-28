@@ -3,7 +3,9 @@ from src.db import get_db_connection
 from src.schemas import OrderStatus, OrderStatusCreate
 from src.dependencies import require_role
 
-router = APIRouter(prefix="/api/order_statuses", tags=["order_statuses"])
+# This router is mounted under `/api` in `main.py`. Removing the redundant
+# `/api` avoids paths like `/api/api/order_statuses`.
+router = APIRouter(prefix="/order_statuses", tags=["order_statuses"])
 
 @router.get("/", response_model=list[OrderStatus], dependencies=[Depends(require_role([0]))])
 def get_statuses():
