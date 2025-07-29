@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    container_name: frog-cafe-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      TZ: 'GMT+3'
+      PGTZ: 'GMT+3'
+    volumes:
+      - db_data:/var/lib/postgresql/data:rw
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+      interval: 60s
+      timeout: 3s
+      retries: 5
+    networks:
+      - backend
+
+  backend:
+    build:
+      context: ./Backend
+    container_name: frog-cafe-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: frog-cafe-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    networks:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  backend:
+    driver: bridge
