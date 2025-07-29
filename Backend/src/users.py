@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from src.db import get_db_connection
 from src.schemas import User, UserCreate
 from src.dependencies import require_role
+import bcrypt
 
 # Routers are mounted under `/api` in `main.py`; using `/api/users` here
 # resulted in paths like `/api/api/users`. Use a relative prefix instead.
@@ -33,12 +34,18 @@ def create_user(user: UserCreate):
         conn.close()
         raise HTTPException(status_code=400, detail="Пользователь с таким именем уже существует")
 
+    # Хеширование пароля перед сохранением
+    hashed_password = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
     # Вставка нового пользователя
-    cur.execute("""
+    cur.execute(
+        """
         INSERT INTO frog_cafe.users (name, pass, role_id)
         VALUES (%s, %s, %s)
         RETURNING id, name, role_id
-    """, (user.name, user.password, user.role_id))
+        """,
+        (user.name, hashed_password, user.role_id),
+    )
 
     new_user = cur.fetchone()
     conn.commit()
@@ -79,13 +86,19 @@ def update_user(user_id: int, updated: UserCreate):
         conn.close()
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
+    # Хешируем пароль при обновлении
+    hashed_password = bcrypt.hashpw(updated.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
     # Обновляем пользователя
-    cur.execute("""
+    cur.execute(
+        """
         UPDATE frog_cafe.users
         SET name = %s, pass = %s, role_id = %s
         WHERE id = %s
         RETURNING id, name, role_id;
-    """, (updated.name, updated.password, updated.role_id, user_id))
+        """,
+        (updated.name, hashed_password, updated.role_id, user_id),
+    )
 
     user = cur.fetchone()
     conn.commit()
