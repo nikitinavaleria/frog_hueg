@@ -3,7 +3,7 @@ version: '3.9'
 services:
   db:
     image: postgres
-    container_name: frog-cafe-db
+    container_name: frog-cafe-db-new
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -13,8 +13,9 @@ services:
       PGTZ: 'GMT+3'
     volumes:
       - db_data:/var/lib/postgresql/data:rw
+      - ./Backend/sql_code/InitDB.sql:/docker-entrypoint-initdb.d/InitDB.sql:ro
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "5444:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
       interval: 60s
@@ -36,6 +37,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       FRONTEND_URL: http://localhost:${FRONTEND_PORT}
       BACKEND_URL: http://localhost:${BACKEND_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES}
     depends_on:
       - db
     ports:

@@ -20,18 +20,8 @@
 
 ## Запуск через Docker
 
-1. Создайте файл `.env` в корне проекта и укажите параметры базы данных:
+1. Создайте файл `.env` в корне проекта и укажите параметры:
 
-```dotenv
-DB_NAME=frog
-DB_USER=frog
-DB_PASSWORD=secret
-DB_PORT=5432
-BACKEND_PORT=8000
-FRONTEND_PORT=5173
-# URL, по которому фронтенд обращается к бэкенду
-VITE_API_BASE_URL=http://localhost:8000
-```
 
 2. Соберите и запустите контейнеры:
 
@@ -41,4 +31,8 @@ docker compose up --build
 
 Адреса сервисов можно изменить через `BACKEND_PORT` и `FRONTEND_PORT` в `.env`.
 По умолчанию backend будет доступен на `http://localhost:8000`, frontend — на `http://localhost:5173`.
+
+## Документация
+
+http://localhost:8000/api/docs
 

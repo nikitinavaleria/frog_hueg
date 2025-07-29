@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # Disable automatic trailing slash redirect
 router = APIRouter(prefix="/menu", tags=["menu"])
 
-@router.get("", response_model=list[MenuItem])  # Route without trailing slash
+# @router.get("", response_model=list[MenuItem])  # Route without trailing slash
 @router.get("/", response_model=list[MenuItem])  # Route with trailing slash
 def get_menu():
     try:
@@ -34,12 +34,14 @@ def get_menu():
 
 
 
-@router.post("/", response_model=MenuItem, dependencies=[Depends(require_role([0]))])
-def create_menu_item(item: MenuItemCreate):
+@router.post("/", response_model=MenuItem)
+def create_menu_item(
+    item: MenuItemCreate,
+    current_user: dict = Depends(require_role([0]))
+):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Check if dish with same name already exists
     cur.execute("SELECT id FROM frog_cafe.menu WHERE dish_name = %s", (item.dish_name,))
     existing_item = cur.fetchone()
     if existing_item:
@@ -65,7 +67,9 @@ def create_menu_item(item: MenuItemCreate):
     conn.commit()
     cur.close()
     conn.close()
+    logger.info(f"User {current_user['name']} added new dish: {item.dish_name}")
     return new_item
+
 
 
 
