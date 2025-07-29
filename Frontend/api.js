@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// Замените YOUR_IP_ADDRESS на IP-адрес вашего компьютера в локальной сети
-const API_BASE_URL = "http://127.0.0.1:8000";
+// Базовый адрес API задается через переменную окружения VITE_API_BASE_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {

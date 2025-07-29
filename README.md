@@ -27,6 +27,10 @@ DB_NAME=frog
 DB_USER=frog
 DB_PASSWORD=secret
 DB_PORT=5432
+BACKEND_PORT=8000
+FRONTEND_PORT=5173
+# URL, по которому фронтенд обращается к бэкенду
+VITE_API_BASE_URL=http://localhost:8000
 ```
 
 2. Соберите и запустите контейнеры:
@@ -35,5 +39,6 @@ DB_PORT=5432
 docker compose up --build
 ```
 
-Backend будет доступен на `http://localhost:8000`, frontend — на `http://localhost:5173`.
+Адреса сервисов можно изменить через `BACKEND_PORT` и `FRONTEND_PORT` в `.env`.
+По умолчанию backend будет доступен на `http://localhost:8000`, frontend — на `http://localhost:5173`.
 

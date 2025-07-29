@@ -24,16 +24,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 app = FastAPI(redirect_slashes=False)
 
 # Configure CORS
-# Замените YOUR_IP_ADDRESS на IP-адрес вашего компьютера в локальной сети
+# Адреса фронтенда и бэкенда можно задать через переменные окружения
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 origins = [
-    "http://localhost:5173",  # Vite dev server
-    "http://127.0.0.1:5173",
-    "http://localhost:8000",  # FastAPI backend
-    "http://127.0.0.1:8000",
-    "http://192.168.0.104:5173",  # Vite dev server on local network
-    "http://192.168.0.104:8000",  # FastAPI backend on local network
-    "*"  # Allow all origins during development
+    frontend_url,
+    backend_url,
+    "*",  # Allow all origins during development
 ]
 
 # origins = [
