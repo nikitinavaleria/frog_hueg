@@ -3,6 +3,7 @@ from src.db import get_db_connection
 from src.schemas import Order, OrderCreate, OrderStatusUpdate
 from src.dependencies import get_current_user, require_role
 import logging
+from psycopg2.extras import RealDictCursor
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -145,23 +146,53 @@ def create_order(current_user=Depends(get_current_user)):
         conn.close()
 
 # GET /api/orders/{id}
-@router.get("/{order_id}", response_model=Order)
-def get_order(order_id: int, current_user=Depends(get_current_user)):
+@router.get("/{order_id}", response_model=Order, dependencies=[Depends(require_role([0]))])
+def get_order(order_id: int):
     conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM frog_cafe.orders WHERE id = %s;", (order_id,))
-    order = cur.fetchone()
-    cur.close()
-    conn.close()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            # сам заказ + статус
+            cur.execute("""
+                SELECT
+                    o.id,
+                    o.user_id,
+                    o.toad_id,
+                    o.status_id,
+                    o.created_at,
+                    os.name AS status_name
+                FROM frog_cafe.orders o
+                JOIN frog_cafe.order_statuses os ON os.id = o.status_id
+                WHERE o.id = %s;
+            """, (order_id,))
+            row = cur.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail="Заказ не найден")
 
-    if not order:
-        raise HTTPException(status_code=404, detail="Заказ не найден")
+            # позиции заказа -> MenuItem
+            cur.execute("""
+                SELECT
+                    m.id,
+                    m.dish_name,
+                    m.image,
+                    m.is_available,
+                    m.description,
+                    m.category,
+                    m.quantity_left
+                FROM frog_cafe.cart c
+                JOIN frog_cafe.menu m ON m.id = c.menu_item
+                WHERE c.order_id = %s
+                ORDER BY c.id;
+            """, (order_id,))
+            items = [dict(r) for r in cur.fetchall()]
 
-    # Только админ или владелец заказа
-    if current_user["role_id"] != 0 and order["user_id"] != current_user["user_id"]:
-        raise HTTPException(status_code=403, detail="Доступ запрещён")
-
-    return order
+        return {
+            "id": row["id"],
+            "created_at": row["created_at"],
+            "status": row["status_name"],
+            "items": items
+        }
+    finally:
+        conn.close()
 
 # PUT /api/orders/{id}/status — все авторизованные пользователи
 @router.put("/{order_id}/status", response_model=Order)

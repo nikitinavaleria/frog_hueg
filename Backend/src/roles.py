@@ -22,7 +22,14 @@ def get_roles():
 def create_role(role: RoleCreate):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO frog_cafe.roles (name) VALUES (%s) RETURNING id, name;", (role.name,))
+    cur.execute("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM frog_cafe.roles;")
+    row = cur.fetchone()
+    new_id = row["next_id"]
+
+    cur.execute(
+        "INSERT INTO frog_cafe.roles (id, name) VALUES (%s, %s) RETURNING id, name;",
+        (new_id, role.name)
+    )
     new_role = cur.fetchone()
     conn.commit()
     cur.close()

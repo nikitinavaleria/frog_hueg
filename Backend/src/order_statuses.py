@@ -21,7 +21,7 @@ def get_statuses():
 def create_status(status: OrderStatusCreate):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO frog_cafe.order_statuses (name) VALUES (%s) RETURNING id, name;", (status.name,))
+    cur.execute("INSERT INTO frog_cafe.order_statuses (id, name) VALUES ((SELECT COALESCE(MAX(id), 0) + 1 FROM frog_cafe.order_statuses), %s) RETURNING id, name;",(status.name,))
     new_status = cur.fetchone()
     conn.commit()
     cur.close()

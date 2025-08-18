@@ -54,12 +54,11 @@ INSERT INTO frog_cafe.roles (id, name) VALUES
 (2, 'tv');
 
 INSERT INTO frog_cafe.users (name, pass, role_id) VALUES
-('orfey', 'zhrat', 0),
-('frog1', 'frog1234', 1),
-('frog2', 'frog2345', 1),
-('frog3', 'frog6789', 1),
-
-('tv', 'tv1234', 2);
+('orfey', '$2b$12$YB7o/Sdqq7cV00uQYfytu.9H8imgdD8yUKZPaE29DtE7nBYf2syVG', 0),
+('frog1', '$2b$12$9kTNX8/.3vTsT0nP5eGHo.NfHE3ZIi4eGHMhpXYPruh22cW0oU/36', 1),
+('frog2', '$2b$12$Xe.e6oP41aLQ1z7mTBHeqe5iZitYYtiW8.eEWFHHtAPQ.aCT59CUy', 1),
+('frog3', '$2b$12$pOUDDku1LQZpy0KQEYO0uut3NxzUhZbqTg0avJiCT7oJMVfrTOPwq', 1),
+('tv', '$2b$12$cz140vNAlqDm4dBDyiUcPu8cdHR58dMBWdnmdZQ1y50c4qHbl/Kxu', 2);
 
 INSERT INTO frog_cafe.order_statuses (id, name) VALUES
 (1, 'Создан'),
