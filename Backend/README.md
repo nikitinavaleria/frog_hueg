@@ -109,8 +109,6 @@ POST /api/cart/{order_id} — добавляет блюда
 
 ### **TV:**
 
-GET /api/tv/display - вывод заказов на экран
-
 GET /api/tv/orders - вывод заказов на экран
 
 
