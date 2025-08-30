@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // Базовый адрес API задается через переменную окружения VITE_API_BASE_URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,7 +11,6 @@ const api = axios.create({
   maxRedirects: 0,
 });
 
-// Add a request interceptor to add the auth token to requests
 api.interceptors.request.use((config) => {
   console.log("Request interceptor called");
   const token = localStorage.getItem("token");
@@ -21,6 +21,7 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
     console.log("No token found in localStorage");
+    delete config.headers.Authorization;
   }
 
   console.log("Request config:", {
@@ -32,7 +33,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Add a response interceptor to handle redirects manually
 api.interceptors.response.use(
   (response) => {
     console.log("Response received:", {
@@ -63,14 +63,14 @@ api.interceptors.response.use(
 
 // Auth endpoints
 export const login = ({ username, password }) =>
-  api.post("/api/auth/login", {
+  api.post("/api/auth/login/", {
     username,
     password,
   });
 
 // Menu endpoints
-export const getMenu = () => api.get("/api/menu");
-export const createMenuItem = (data) => api.post("/api/menu", data);
+export const getMenu = () => api.get("/api/menu/");
+export const createMenuItem = (data) => api.post("/api/menu/", data);
 export const updateMenuItem = (id, data) => api.put(`/api/menu/${id}`, data);
 export const deleteMenuItem = (id) => api.delete(`/api/menu/${id}`);
 
@@ -79,15 +79,19 @@ export const getCart = (orderId) => api.get(`/api/cart/${orderId}`);
 export const addToCart = (orderId, menuItems) =>
   api.post(`/api/cart/${orderId}`, { menu_items: menuItems });
 export const removeFromCart = (orderId, menuItemId) =>
-  api.delete(`/api/cart/${orderId}/${menuItemId}`);
+  api.request({
+    url: `/api/cart/${orderId}`,
+    method: "DELETE",
+    data: { menu_item_id: menuItemId },
+  });
 
 // Orders endpoints
-export const createOrder = (data) => api.post("/api/orders", data);
-export const getOrders = () => api.get("/api/orders");
+export const createOrder = (data) => api.post("/api/orders/", data);
+export const getOrders = () => api.get("/api/orders/");
 export const updateOrderStatus = (id, status) =>
   api.put(`/api/orders/${id}/status`, { status_id: status });
 export const deleteOrder = (id) => api.delete(`/api/orders/${id}`);
-export const clearOrders = () => api.delete("/api/orders");
+export const clearOrders = () => api.delete("/api/orders/");
 
 // Toads endpoints
 export const getToads = () => api.get("/api/toads");
@@ -95,7 +99,7 @@ export const updateToadStatus = (id, isTaken) =>
   api.put(`/api/toads/${id}`, { is_taken: isTaken });
 
 // TV Display endpoints
-export const getDisplayData = () => api.get("/api/tv/orders");
-export const getTVOrders = () => api.get("/api/tv/orders");
+export const getDisplayData = () => api.get("/api/tv/orders/");
+export const getTVOrders = () => api.get("/api/tv/orders/");
 
 export default api;

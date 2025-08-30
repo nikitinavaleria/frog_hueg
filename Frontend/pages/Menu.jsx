@@ -50,7 +50,7 @@ export default function Menu() {
       const unavailableItems = cart.filter((item) => !item.is_available);
       if (unavailableItems.length > 0) {
         setOrderError(
-          `Следующие товары недоступны: ${unavailableItems
+          `Следующие товары недоступны: ${unavailableItems}
             .map((item) => item.dish_name)
             .join(", ")}`
         );
@@ -222,6 +222,13 @@ export default function Menu() {
             <p className="mb-4">Вам досталась такая жабка:</p>
             <img src="/images/frog.png" alt="Жабка" className="mx-auto mb-4" />
             <p>Ожидайте изменения статуса заказа на мониторе</p>
+            <button
+              onClick={() => {
+                setIsModalOpen(false);
+                clearCart();
+              }}>
+              Еще хочу
+            </button>
           </div>
         ) : (
           <>

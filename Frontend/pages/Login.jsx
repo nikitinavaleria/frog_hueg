@@ -1,3 +1,4 @@
+// pages/Login.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -16,23 +17,26 @@ export default function Login() {
 
     try {
       const response = await apiLogin({ username, password });
-      const userData = response.data;
 
-      // Store user data
-      login(userData);
+      // Сохраняем токен и роль в контекст
+      login({
+        access_token: response.data.access_token,
+        role_id: response.data.role_id,
+      });
 
-      // Redirect based on role_id
-      switch (userData.role_id) {
-        case 0: // admin
+      // Берём роль из ответа
+      const userRole = response.data.role_id;
+
+      // Навигация в зависимости от роли
+      switch (userRole) {
+        case 0:
           navigate("/admin");
           break;
-        case 2: // tv
+        case 2:
           navigate("/display");
           break;
-        case 1: // regular user
         default:
           navigate("/menu");
-          break;
       }
     } catch (err) {
       console.error("Login error:", err);
