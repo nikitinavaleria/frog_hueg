@@ -9,12 +9,14 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import Header from "./components/Header";
 
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
+          <Header />
           <Routes>
             {/* Любой авторизованный пользователь может заходить */}
             <Route
