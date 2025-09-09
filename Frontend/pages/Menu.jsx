@@ -50,7 +50,7 @@ export default function Menu() {
       const unavailableItems = cart.filter((item) => !item.is_available);
       if (unavailableItems.length > 0) {
         setOrderError(
-          `Следующие товары недоступны: ${unavailableItems
+          `Следующие товары недоступны: ${unavailableItems}
             .map((item) => item.dish_name)
             .join(", ")}`
         );
@@ -155,7 +155,7 @@ export default function Menu() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex container mx-auto justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Grenoilli de Frace</h1>
         {cart.length > 0 && (
           <button
@@ -167,7 +167,7 @@ export default function Menu() {
       </div>
 
       {Object.entries(categories).map(([category, items]) => (
-        <div key={category} className="mb-8">
+        <div key={category} className="mb-8 container mx-auto">
           <h2 className="text-xl font-bold mb-4">{category}:</h2>
           <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((item) => (
@@ -222,6 +222,13 @@ export default function Menu() {
             <p className="mb-4">Вам досталась такая жабка:</p>
             <img src="/images/frog.png" alt="Жабка" className="mx-auto mb-4" />
             <p>Ожидайте изменения статуса заказа на мониторе</p>
+            <button
+              onClick={() => {
+                setIsModalOpen(false);
+                clearCart();
+              }}>
+              Еще хочу
+            </button>
           </div>
         ) : (
           <>

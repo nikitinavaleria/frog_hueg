@@ -1,35 +1,48 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
+  const login = ({ access_token, role_id }) => {
+    setToken(access_token);
+    setUser({ role_id });
   };
 
   const logout = () => {
+    setToken(null);
     setUser(null);
-    localStorage.removeItem("user");
   };
 
-  const isAuthenticated = () => {
-    return !!user;
-  };
+  const isAuthenticated = () => !!token;
 
-  const isAdmin = () => {
-    return user?.role_id === 0;
-  };
-
-  const isTV = () => {
-    return user?.role_id === 2;
-  };
+  const isAdmin = () => user?.role_id === 0;
+  const isTV = () => user?.role_id === 2;
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isAuthenticated, isAdmin, isTV }}>
+      value={{ user, token, login, logout, isAuthenticated, isAdmin, isTV }}>
       {children}
     </AuthContext.Provider>
   );

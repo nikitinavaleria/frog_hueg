@@ -44,4 +44,8 @@ def login(login_data: LoginRequest):
         "name": user["name"],
         "role_id": user["role_id"]
     })
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+    "access_token": access_token,
+    "token_type": "bearer",
+    "role_id": user["role_id"]
+}

@@ -5,10 +5,13 @@ import {
   updateOrderStatus,
   deleteOrder,
   clearOrders,
+  removeFromCart,
+  getCart,
   getMenu,
   updateMenuItem,
 } from "../api";
 import { useAuth } from "../context/AuthContext";
+import AddDish from "../components/AddDish/AddDish";
 
 const Admin = () => {
   const [orders, setOrders] = useState([]);
@@ -138,16 +141,12 @@ const Admin = () => {
 
   const handleClearOrders = async () => {
     try {
-      await clearOrders();
-      setOrders([]);
+      await clearOrders(); // DELETE /api/orders/
+      setOrders([]); // обновляем состояние
       setError(null);
     } catch (err) {
       console.error("Error clearing orders:", err);
-      if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
-      } else {
-        setError("Ошибка при очистке заказов");
-      }
+      setError(err.response?.data?.detail || "Ошибка при очистке заказов");
     }
   };
 
@@ -219,7 +218,7 @@ const Admin = () => {
           ))}
         </div>
       </div>
-
+      <AddDish />
       {/* Секция заказов */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Управление заказами</h2>
