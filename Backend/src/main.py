@@ -25,30 +25,25 @@ app = FastAPI(redirect_slashes=False)
 
 # Configure CORS
 # Адреса фронтенда и бэкенда можно задать через переменные окружения
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:8378")
 backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 origins = [
     frontend_url,
     backend_url,
-    "*",  # Allow all origins during development
+    "*", 
 ]
 
-# origins = [
-#     "http://localhost:5173"
-# ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins="*",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
-    max_age=86400,  # Cache preflight requests for 24 hours
+    max_age=86400, 
 )
-
-# Create a sub-application for /api routes
 api_app = FastAPI(title="API")
 
 api_app.include_router(auth_router)

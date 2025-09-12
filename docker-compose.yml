@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   db:
@@ -9,8 +9,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      TZ: 'GMT+3'
-      PGTZ: 'GMT+3'
+      TZ: "GMT+3"
+      PGTZ: "GMT+3"
     volumes:
       - db_data:/var/lib/postgresql/data:rw
       - ./Backend/sql_code/InitDB.sql:/docker-entrypoint-initdb.d/InitDB.sql:ro
@@ -35,8 +35,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      FRONTEND_URL: http://localhost:${FRONTEND_PORT}
-      BACKEND_URL: http://localhost:${BACKEND_PORT}
+      FRONTEND_URL: http://frontend
+      BACKEND_URL: http://backend:8000
       JWT_SECRET: ${JWT_SECRET}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
       JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES}
@@ -51,13 +51,13 @@ services:
     build:
       context: ./Frontend
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_API_BASE_URL: http://localhost:8000/api
     container_name: frog-cafe-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - "${FRONTEND_PORT:-5173}:80"
+      - "${FRONTEND_PORT:-8378}:80"
     networks:
       - backend
 
