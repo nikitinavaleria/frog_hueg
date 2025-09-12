@@ -25,7 +25,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-@router.post("/auth/login", response_model=TokenResponse)
+@router.post("/auth/login/", response_model=TokenResponse)
 def login(login_data: LoginRequest):
     logger.info(f"Login attempt - username: {login_data.username}")
     conn = get_db_connection()
